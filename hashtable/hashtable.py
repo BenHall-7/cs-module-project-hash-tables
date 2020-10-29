@@ -21,8 +21,8 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
-
+        self.capacity = max(capacity, MIN_CAPACITY)
+        self.storage = [None] * self.capacity
 
     def get_num_slots(self):
         """
@@ -52,9 +52,12 @@ class HashTable:
 
         Implement this, and/or DJB2.
         """
-
-        # Your code here
-
+        fnv = 0xcbf29ce484222325
+        for v in str.encode(key):
+            fnv *= v
+            fnv ^= 0x100000001B3
+        
+        return fnv
 
     def djb2(self, key):
         """
@@ -64,14 +67,13 @@ class HashTable:
         """
         # Your code here
 
-
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -81,8 +83,21 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        index = self.hash_index(key)
+        cur = self.storage[index]
+        if not cur:
+            self.storage[index] = HashTableEntry(key, value)
+        else:
+            while cur:
+                if cur.key == key:
+                    cur.value = value
+                    return
+                
+                if cur.next:
+                    cur = cur.next
+                else:
+                    cur.next = HashTableEntry(key, value)
+                    return
 
     def delete(self, key):
         """
@@ -92,8 +107,19 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        index = self.hash_index(key)
+        prev = None
+        cur = self.storage[index]
+        while cur:
+            if cur.key == key:
+                if prev:
+                    prev.next = cur.next
+                else:
+                    self.storage[index] = cur.next
+                return cur.value
+            prev, cur = cur, cur.next
+        
+        print(f"WARN: no key matching '{key}' found")
 
     def get(self, key):
         """
@@ -103,8 +129,14 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        index = self.hash_index(key)
+        cur = self.storage[index]
+        while cur:
+            if cur.key == key:
+                return cur.value
+            cur = cur.next
+        
+        return None
 
     def resize(self, new_capacity):
         """
