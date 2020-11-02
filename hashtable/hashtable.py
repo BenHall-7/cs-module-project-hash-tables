@@ -23,6 +23,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = max(capacity, MIN_CAPACITY)
         self.storage = [None] * self.capacity
+        self.len = 0
 
     def get_num_slots(self):
         """
@@ -36,15 +37,13 @@ class HashTable:
         """
         return len(self.storage)
 
-
     def get_load_factor(self):
         """
         Return the load factor for this hash table.
 
         Implement this.
         """
-        # Your code here
-
+        return self.len / self.get_num_slots()
 
     def fnv1(self, key):
         """
@@ -92,13 +91,17 @@ class HashTable:
             while cur:
                 if cur.key == key:
                     cur.value = value
-                    return
+                    break
                 
                 if cur.next:
                     cur = cur.next
                 else:
                     cur.next = HashTableEntry(key, value)
-                    return
+                    break
+        
+        self.len += 1
+        if self.get_load_factor() > 0.7:
+            self.resize(self.get_num_slots() * 2)
 
     def delete(self, key):
         """
@@ -117,6 +120,9 @@ class HashTable:
                     prev.next = cur.next
                 else:
                     self.storage[index] = cur.next
+                self.len -= 1
+                if self.get_load_factor() < 0.2:
+                    self.resize(max(self.capacity // 2, MIN_CAPACITY))
                 return cur.value
             prev, cur = cur, cur.next
         
@@ -146,9 +152,13 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
-
+        old = self.storage
+        self.storage = [None] * new_capacity
+        for bucket in old:
+            cur = bucket
+            while cur:
+                self.put(cur.key, cur.value)
+                cur = cur.next
 
 if __name__ == "__main__":
     ht = HashTable(8)
