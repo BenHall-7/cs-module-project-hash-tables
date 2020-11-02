@@ -34,7 +34,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return len(self.storage)
 
 
     def get_load_factor(self):
@@ -56,16 +56,17 @@ class HashTable:
         for v in str.encode(key):
             fnv *= v
             fnv ^= 0x100000001B3
+            fnv &= 0xffff_ffff_ffff_ffff
         
         return fnv
 
-    def djb2(self, key):
-        """
-        DJB2 hash, 32-bit
+    # def djb2(self, key):
+    #     """
+    #     DJB2 hash, 32-bit
 
-        Implement this, and/or FNV-1.
-        """
-        # Your code here
+    #     Implement this, and/or FNV-1.
+    #     """
+    #     # Your code here
 
     def hash_index(self, key):
         """
