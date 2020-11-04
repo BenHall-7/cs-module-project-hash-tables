@@ -1,7 +1,13 @@
 def word_count(s):
-    # Your code here
-
-
+    counts = {}
+    for word in ''.join(filter(lambda c: c not in r"\":;,.-+=/\\\|[]}{()*^&", s)).lower().split():
+        if len(word) > 0:
+            if word in counts:
+                counts[word] += 1
+            else:
+                counts[word] = 1
+    print(counts)
+    return counts
 
 if __name__ == "__main__":
     print(word_count(""))
