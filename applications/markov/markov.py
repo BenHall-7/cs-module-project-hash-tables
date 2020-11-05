@@ -23,7 +23,7 @@ def is_stop(word: str):
 with open("C:\\Users\\Breakfast\\Code\\Lambda\\cs_5\\cs-module-project-hash-tables\\applications\\markov\\input.txt") as f:
     words = f.read()
     prev = None
-    for word in words.split(" "):
+    for word in words.split():
         word = word.strip()
         if prev:
             if is_start(prev):
